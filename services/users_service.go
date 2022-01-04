@@ -2,6 +2,7 @@ package services
 
 import (
 	"userapi/domain/users"
+	"userapi/utils/date_utils"
 	"userapi/utils/errors"
 )
 
@@ -18,16 +19,18 @@ func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 		return nil, err
 	}
 
-	if err:= user.Save(); err != nil {
+	user.Status = users.StatusActive
+	user.DateCreated = date_utils.GetNowDBFormat()
+	if err := user.Save(); err != nil {
 		return nil, err
 	}
-	
+
 	return &user, nil
 }
 
-func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr){
+func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr) {
 	current, err := GetUser(user.Id)
-	if  err != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -35,7 +38,7 @@ func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr){
 	// 	return nil, err
 	// }
 
-	if isPartial{
+	if isPartial {
 		if user.FirstName != "" {
 			current.FirstName = user.FirstName
 		}
@@ -52,11 +55,18 @@ func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr){
 		current.LastName = user.LastName
 		current.Email = user.Email
 	}
-
-	
-
-	if err :=  current.Update(); err != nil {
+	if err := current.Update(); err != nil {
 		return nil, err
 	}
 	return current, nil
+}
+
+func DeleteUser(userId int64) *errors.RestErr{
+	user := &users.User{Id: userId}
+	return user.Delete()
+}
+
+func Search(status string) ([]users.User, *errors.RestErr) {
+	dao := &users.User{}
+	return dao.FindByStatus(status)
 }
