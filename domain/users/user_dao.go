@@ -35,7 +35,7 @@ func (user *User) Get() *errors.RestErr {
 func (user *User) Save() *errors.RestErr {
 	stmt, err := users_db.Client.Prepare(queryInsertUser)
 	if err != nil {
-		logger.Error("error when trying to save user statement", err)
+		logger.Error("error when trying to prepare save user statement", err)
 		return errors.NewInternalServerError("database error")
 	}
 	defer stmt.Close()
