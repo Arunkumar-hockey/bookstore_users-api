@@ -1,14 +1,19 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 	"userapi/domain/users"
 	"userapi/services"
 	"userapi/utils/errors"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
+
+const SecretKey = "secret"
 
 func getUserId(userIdParam string) (int64, *errors.RestErr) {
 	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
@@ -109,7 +114,22 @@ func Login(c *gin.Context) {
 	user, err := services.UsersService.LoginUser(request)
 	if err != nil {
 		c.JSON(err.Status, err)
-		return
+		return 
 	}
-	c.JSON(http.StatusOK, user)
+
+expirationTime := time.Now().Add(time.Hour * 24)
+
+	claims:= jwt.NewWithClaims(jwt.SigningMethodES256, jwt.StandardClaims{
+		Issuer:    strconv.Itoa(int(user.Id)),
+		ExpiresAt: expirationTime.Unix(),
+	})
+
+	token, tokenErr := claims.SignedString([]byte(SecretKey))
+
+	if tokenErr != nil {
+		return 
+	}
+	fmt.Println(token)
+
+	c.JSON(http.StatusOK, user.Marshall(c.GetHeader("X-Public") == "true"))
 }
