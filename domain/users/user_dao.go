@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created, status, password) VALUES(?, ?, ?, ?, ?, ?);"
-	queryGetUser    = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE id=?;"
-	queryUpdateUser = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
-	queryDeleteUser = "DELETE FROM users WHERE id=?"
-	queryFindByStatus = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE status=?;"
-	queryFindByEmailAndPassword= "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE email=? AND password=?;"
+	queryInsertUser             = "INSERT INTO users(first_name, last_name, email, date_created, status, password) VALUES(?, ?, ?, ?, ?, ?);"
+	queryGetUser                = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE id=?;"
+	queryUpdateUser             = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
+	queryDeleteUser             = "DELETE FROM users WHERE id=?"
+	queryFindByStatus           = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE status=?;"
+	queryFindByEmailAndPassword = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE email=? AND password=?;"
 )
 
 func (user *User) Get() *errors.RestErr {
@@ -135,7 +135,7 @@ func (user *User) FindByEmailAndPassword() *errors.RestErr {
 		}
 		logger.Error("error when trying to get user by email and password", getError)
 		return errors.NewInternalServerError("database error")
-		
+
 	}
 	return nil
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const SecretKey = "secret"
+var SecretKey = []byte("key")
 
 func getUserId(userIdParam string) (int64, *errors.RestErr) {
 	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
@@ -41,7 +41,7 @@ func Create(c *gin.Context) {
 
 func Get(c *gin.Context) {
 	userId, idErr := getUserId(c.Param("user_id"))
-	if idErr != nil{
+	if idErr != nil {
 		c.JSON(idErr.Status, idErr)
 		return
 	}
@@ -55,7 +55,7 @@ func Get(c *gin.Context) {
 
 func Update(c *gin.Context) {
 	userId, idErr := getUserId(c.Param("user_id"))
-	if idErr != nil{
+	if idErr != nil {
 		c.JSON(idErr.Status, idErr)
 		return
 	}
@@ -70,18 +70,18 @@ func Update(c *gin.Context) {
 
 	isPartial := c.Request.Method == http.MethodPatch
 
-	 result, err:= services.UsersService.UpdateUser(isPartial, user)
-		if err != nil {
-			c.JSON(err.Status, err)
-			return
-		}
-		c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
-	
+	result, err := services.UsersService.UpdateUser(isPartial, user)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
+
 }
 
 func Delete(c *gin.Context) {
 	userId, idErr := getUserId(c.Param("user_id"))
-	if idErr != nil{
+	if idErr != nil {
 		c.JSON(idErr.Status, idErr)
 		return
 	}
@@ -94,7 +94,7 @@ func Delete(c *gin.Context) {
 }
 
 func Search(c *gin.Context) {
-    status := c.Query("status")
+	status := c.Query("status")
 
 	users, err := services.UsersService.SearchUser(status)
 	if err != nil {
@@ -114,20 +114,20 @@ func Login(c *gin.Context) {
 	user, err := services.UsersService.LoginUser(request)
 	if err != nil {
 		c.JSON(err.Status, err)
-		return 
+		return
 	}
 
-expirationTime := time.Now().Add(time.Hour * 24)
+	expirationTime := time.Now().Add(time.Hour * 24)
 
-	claims:= jwt.NewWithClaims(jwt.SigningMethodES256, jwt.StandardClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.StandardClaims{
 		Issuer:    strconv.Itoa(int(user.Id)),
 		ExpiresAt: expirationTime.Unix(),
 	})
 
-	token, tokenErr := claims.SignedString([]byte(SecretKey))
+	token, tokenErr := claims.SignedString(SecretKey)
 
 	if tokenErr != nil {
-		return 
+		fmt.Println("tokenError......", tokenErr)
 	}
 	fmt.Println(token)
 
