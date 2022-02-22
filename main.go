@@ -4,7 +4,7 @@ import (
 	"userapi/app"
 )
 
-// var mykey = []byte("mysecretkey")
+//var mykey = []byte("mysecretkey")
 
 // func GenerateJWT() (string, error) {
 // 	token := jwt.New(jwt.SigningMethodHS256)
