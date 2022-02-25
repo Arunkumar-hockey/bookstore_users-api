@@ -1,17 +1,13 @@
 package users
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"userapi/domain/users"
 	"userapi/services"
 	"userapi/utils/errors"
-	"github.com/gin-gonic/gin"
 )
-
-
-
-
 
 func getUserId(userIdParam string) (int64, *errors.RestErr) {
 	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
@@ -74,7 +70,6 @@ func Update(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
-
 }
 
 func Delete(c *gin.Context) {
@@ -117,4 +112,3 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user.Marshall(c.GetHeader("X-Public") == "true"))
 }
-
